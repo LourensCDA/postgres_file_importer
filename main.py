@@ -81,7 +81,7 @@ if __name__ == "__main__":
     logging.basicConfig(stream=sys.stderr, level=log_lvl)
 
     try:
-        file_data = load_file("Outbound Calls Data - 29 June 2022.xlsx")
+        file_data = load_file("file_name.xlsx")
         logging.debug(file_data[0])
 
     except Exception as e:
