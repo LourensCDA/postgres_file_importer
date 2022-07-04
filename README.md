@@ -20,3 +20,10 @@ pipenv run python main.py
 ```
 
 # .env
+
+LOG_LEVEL=debug
+DB_HOST=host name
+DB_PORT=port
+DB_USER=username
+DB_PASSWORD=password
+DB_NAME=databae name
