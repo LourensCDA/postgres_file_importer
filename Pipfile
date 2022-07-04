@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 openpyxl = "*"
 python-dotenv = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
