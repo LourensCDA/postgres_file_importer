@@ -1,4 +1,4 @@
-import re, sys, logging, openpyxl, os, dotenv, psycopg2
+import re, sys, logging, openpyxl, os, dotenv, psycopg2, csv
 from datetime import datetime
 
 #   @desc   function to format dictionary key
@@ -35,7 +35,7 @@ def valid_email(email):
 #   @desc   load excel file data into array of objects
 #   @author Lourens Botha
 #   @date   2022-07-04
-def load_file(var_loc):
+def load_xlsx_file(var_loc):
 
     # open workbook, read only property allows for more consistent and faster read times esecially when working on larger excel files, data_only shows calculated values of formuals
     wb = openpyxl.load_workbook(var_loc, read_only=True, data_only=True)
@@ -102,6 +102,37 @@ def load_file(var_loc):
     return data
 
 
+#   @desc   load csv/txt file data into array of objects
+#   @author Lourens Botha
+#   @date   2022-07-04
+def load_csv_file(var_loc):
+    data = []
+    # open file
+    with open(var_loc, "r") as file:
+        reader = csv.reader(file, delimiter=";")
+        for row in reader:
+            # print(row)
+            # custom logic START
+            if not (row[1]):
+                data.append(
+                    {
+                        "idnumber": row[0],
+                        "firstname": row[4],
+                        "surname": row[3],
+                        "deathstatus": row[5],
+                        "deathdate": (
+                            datetime.strptime(row[6], "%Y%m%d").date()
+                            if row[6]
+                            else None
+                        ),
+                    }
+                )
+
+            # custom logic END
+
+    return data
+
+
 #   @desc   insert data array of objects to table
 #   @author Lourens Botha
 #   @date   2022-07-04
@@ -150,15 +181,21 @@ if __name__ == "__main__":
     logging.basicConfig(stream=sys.stderr, level=log_lvl)
 
     try:
-        # specify file location
-        file_data = load_file("files/fileName.xlsx")
+        # specify file location xlsx
+        # file_data = load_xlsx_file("files/fileName.xlsx")
+
+        # specify csv/txt file location
+        file_data = load_csv_file("files/filename.csv")
+
         if file_data:
-            logging.debug(file_data[0])
+            file_data.pop(0)
+            file_data.pop(-1)
+            logging.debug(file_data[-1])
 
             # custom insert statement start
 
             insert_data_many(
-                "INSERT INTO schema.table(column1, column2) values (%(column1)s, %(column2)s);",
+                "INSERT INTO schema.tablename(column1, column2) values (%(column1)s, %(column2)s);",
                 file_data,
             )
 
